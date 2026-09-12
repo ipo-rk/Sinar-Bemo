@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id" x-data="themeApp()" x-init="init()">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Users - Admin SINAR BEMO.COM</title>
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/img/apple-touch-icon.png">
+<link rel="shortcut icon" href="../favicon.ico">
+<meta name="robots" content="noindex, nofollow">
+
+<script>(function(){const w=console.warn;console.warn=function(...a){if(typeof a[0]==="string"&&a[0].includes("cdn.tailwindcss.com"))return;w.apply(console,a);};})();</script>
+<script>/* theme-init */!function(){var t=localStorage.getItem('theme')||'system',d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}()</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>window.ASSET_BASE = '../';</script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+
+<div class="admin-shell" x-data="adminShell('users')">
+  <div id="admin-sidebar-mount"></div>
+  <div class="admin-content">
+    <div id="admin-topbar-mount"></div>
+
+    <div class="admin-main" x-data="userManagementApp()">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <select x-model="roleFilter" class="form-control" style="max-width:200px;">
+          <option value="all">Semua Role</option>
+          <option>Super Admin</option><option>Admin</option><option>Editor</option>
+          <option>Wartawan</option><option>Kontributor</option><option>Pembaca</option>
+        </select>
+        <button @click="openAdd()" class="btn btn-primary btn-sm"><i data-lucide="user-plus" style="width:14px;height:14px"></i> Tambah User</button>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Bergabung</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <template x-for="u in filtered" :key="u.id">
+              <tr>
+                <td class="flex items-center gap-2 font-medium"><img :src="u.avatar" class="w-8 h-8 rounded-full object-cover" alt=""><span x-text="u.name"></span></td>
+                <td class="text-meta" x-text="u.email"></td>
+                <td><span class="badge badge-category" x-text="u.role"></span></td>
+                <td><span class="badge" :class="u.status==='active' ? 'badge-status-published' : 'badge-status-draft'" x-text="u.status==='active' ? 'Aktif' : 'Nonaktif'"></span></td>
+                <td class="text-meta" x-text="u.joined"></td>
+                <td>
+                  <div class="flex items-center gap-1">
+                    <button @click="openEdit(u)" class="action-icon-btn" aria-label="Edit"><i data-lucide="pencil" style="width:15px;height:15px"></i></button>
+                    <button @click="remove(u)" class="action-icon-btn danger" aria-label="Hapus"><i data-lucide="trash-2" style="width:15px;height:15px"></i></button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+      <div x-show="showModal" x-cloak x-transition class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showModal=false">
+        <div class="modal-panel max-w-md w-full p-6" @click.outside="showModal=false">
+          <h3 class="text-h3 mb-4" x-text="editing ? 'Edit Pengguna' : 'Tambah Pengguna'"></h3>
+          <label class="form-label">Nama</label>
+          <input x-model="form.name" type="text" class="form-control mb-3">
+          <label class="form-label">Email</label>
+          <input x-model="form.email" type="email" class="form-control mb-3">
+          <label class="form-label">Role</label>
+          <select x-model="form.role" class="form-control mb-3">
+            <option>Super Admin</option><option>Admin</option><option>Editor</option>
+            <option>Wartawan</option><option>Kontributor</option><option>Pembaca</option>
+          </select>
+          <label class="form-label">Status</label>
+          <select x-model="form.status" class="form-control mb-4">
+            <option value="active">Aktif</option><option value="inactive">Nonaktif</option>
+          </select>
+          <div class="flex gap-2 justify-end">
+            <button @click="showModal=false" class="btn btn-outline">Batal</button>
+            <button @click="save()" class="btn btn-primary">Simpan</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    mountAdminShell('users', 'Users');
+    setTimeout(() => window.lucide && lucide.createIcons(), 200);
+  });
+  document.addEventListener('alpine:initialized', () => window.lucide && lucide.createIcons());
+</script>
+</body>
+</html>

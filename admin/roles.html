@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id" x-data="themeApp()" x-init="init()">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roles - Admin SINAR BEMO.COM</title>
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../assets/img/apple-touch-icon.png">
+<link rel="shortcut icon" href="../favicon.ico">
+<meta name="robots" content="noindex, nofollow">
+
+<script>(function(){const w=console.warn;console.warn=function(...a){if(typeof a[0]==="string"&&a[0].includes("cdn.tailwindcss.com"))return;w.apply(console,a);};})();</script>
+<script>/* theme-init */!function(){var t=localStorage.getItem('theme')||'system',d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}()</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>window.ASSET_BASE = '../';</script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+
+<div class="admin-shell" x-data="adminShell('roles')">
+  <div id="admin-sidebar-mount"></div>
+  <div class="admin-content">
+    <div id="admin-topbar-mount"></div>
+
+    <div class="admin-main" x-data="{ roles: [
+      { name: 'Super Admin', desc: 'Akses penuh ke seluruh sistem, termasuk pengaturan dan manajemen pengguna.', count: 1, color: '#ef4444' },
+      { name: 'Admin', desc: 'Mengelola konten, kategori, media, dan moderasi komentar.', count: 1, color: '#2563eb' },
+      { name: 'Editor', desc: 'Meninjau dan menyetujui berita sebelum diterbitkan.', count: 1, color: '#7c3aed' },
+      { name: 'Wartawan', desc: 'Menulis dan mengajukan berita untuk direview.', count: 2, color: '#16a34a' },
+      { name: 'Kontributor', desc: 'Menulis draft berita dengan akses terbatas.', count: 1, color: '#ea580c' },
+      { name: 'Pembaca', desc: 'Akses baca, bookmark, dan komentar di situs publik.', count: 1, color: '#64748b' },
+    ] }">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <template x-for="r in roles" :key="r.name">
+          <div class="card p-5">
+            <div class="flex items-center justify-between">
+              <span class="badge" :style="'background:' + r.color + '22;color:' + r.color" x-text="r.name"></span>
+              <span class="text-meta" x-text="r.count + ' user'"></span>
+            </div>
+            <p class="text-sm mt-3" style="color:var(--gray-500);" x-text="r.desc"></p>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    mountAdminShell('roles', 'Roles');
+    setTimeout(() => window.lucide && lucide.createIcons(), 200);
+  });
+</script>
+</body>
+</html>

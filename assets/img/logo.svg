@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sb-gold-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="sb-red-logo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    <filter id="sb-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Left Emblem (Circular SB) -->
+  <g transform="translate(10, 10)">
+    <!-- Top Arc -->
+    <path d="M 12 48 A 40 40 0 0 1 88 42 C 84 32 74 20 60 14 C 38 6 18 22 12 48 Z" fill="url(#sb-gold-logo)"/>
+    <path d="M 22 36 A 35 35 0 0 1 82 32 C 70 20 52 14 36 20 C 28 24 24 30 22 36 Z" fill="url(#sb-red-logo)"/>
+
+    <!-- Bottom Arc -->
+    <path d="M 88 52 A 40 40 0 0 1 12 58 C 16 68 26 80 40 86 C 62 94 82 78 88 52 Z" fill="url(#sb-gold-logo)"/>
+    <path d="M 78 64 A 35 35 0 0 1 18 68 C 30 80 48 86 64 80 C 72 76 76 70 78 64 Z" fill="url(#sb-red-logo)"/>
+
+    <!-- SB Monogram -->
+    <g filter="url(#sb-shadow)" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-style="italic">
+      <text x="18" y="60" font-size="44" fill="url(#sb-gold-logo)" letter-spacing="-2">S</text>
+      <text x="44" y="60" font-size="44" fill="url(#sb-red-logo)" letter-spacing="-2">B</text>
+    </g>
+
+    <!-- Accent lines -->
+    <path d="M 16 68 L 50 68 L 46 72 L 12 72 Z" fill="url(#sb-gold-logo)"/>
+    <path d="M 52 68 L 88 68 L 84 72 L 48 72 Z" fill="url(#sb-red-logo)"/>
+  </g>
+
+  <!-- Right Typography -->
+  <g transform="translate(125, 20)">
+    <text x="0" y="44" font-family="'Merriweather', Georgia, serif" font-weight="900" font-size="34" letter-spacing="-0.5">
+      <tspan fill="#0F172A">SINAR </tspan>
+      <tspan fill="#EF4444">BEMO</tspan>
+      <tspan fill="#0F172A">.COM</tspan>
+    </text>
+    <text x="2" y="68" font-family="'Inter', -apple-system, sans-serif" font-weight="700" font-size="12" fill="#2563EB" letter-spacing="2.5">
+      BERITA AKURAT &amp; TERKINI
+    </text>
+  </g>
+</svg>
+

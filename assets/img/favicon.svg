@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sb-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="sb-red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+    <filter id="subtle-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Circular Outer Swooshes -->
+  <!-- Top Gold Arc -->
+  <path d="M 12 48 A 40 40 0 0 1 88 42 C 84 32 74 20 60 14 C 38 6 18 22 12 48 Z" fill="url(#sb-gold)"/>
+  <path d="M 22 36 A 35 35 0 0 1 82 32 C 70 20 52 14 36 20 C 28 24 24 30 22 36 Z" fill="url(#sb-red)"/>
+
+  <!-- Bottom Red Arc -->
+  <path d="M 88 52 A 40 40 0 0 1 12 58 C 16 68 26 80 40 86 C 62 94 82 78 88 52 Z" fill="url(#sb-gold)"/>
+  <path d="M 78 64 A 35 35 0 0 1 18 68 C 30 80 48 86 64 80 C 72 76 76 70 78 64 Z" fill="url(#sb-red)"/>
+
+  <!-- Center 'S' (Gold) & 'B' (Red) -->
+  <g filter="url(#subtle-shadow)" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-style="italic">
+    <!-- Stylized S -->
+    <text x="18" y="60" font-size="44" fill="url(#sb-gold)" letter-spacing="-2">S</text>
+    <!-- Stylized B -->
+    <text x="44" y="60" font-size="44" fill="url(#sb-red)" letter-spacing="-2">B</text>
+  </g>
+
+  <!-- Accent Divider / Underline -->
+  <path d="M 16 68 L 50 68 L 46 72 L 12 72 Z" fill="url(#sb-gold)"/>
+  <path d="M 52 68 L 88 68 L 84 72 L 48 72 Z" fill="url(#sb-red)"/>
+</svg>
+
