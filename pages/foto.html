@@ -2,7 +2,7 @@
 <html lang="id" x-data="themeApp()" x-init="init()">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Galeri Foto - SINAR BEMO.COM</title>
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
@@ -59,9 +59,9 @@
 
     <!-- Lightbox -->
     <div x-show="lightboxOpen" x-cloak x-transition class="modal-overlay fixed inset-0 flex items-center justify-center p-4" @keydown.escape.window="close()">
-      <button @click="close()" class="absolute top-5 right-5 text-white" aria-label="Tutup"><i data-lucide="x" style="width:28px;height:28px"></i></button>
-      <button @click="prev()" class="absolute left-4 text-white" aria-label="Sebelumnya"><i data-lucide="chevron-left" style="width:36px;height:36px"></i></button>
-      <button @click="next()" class="absolute right-4 text-white" aria-label="Berikutnya" style="right:4rem;"><i data-lucide="chevron-right" style="width:36px;height:36px"></i></button>
+      <button @click="close()" class="absolute top-4 right-4 text-white p-2" aria-label="Tutup"><i data-lucide="x" style="width:26px;height:26px"></i></button>
+      <button @click="prev()" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-white p-2" aria-label="Sebelumnya"><i data-lucide="chevron-left" style="width:32px;height:32px"></i></button>
+      <button @click="next()" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-white p-2" aria-label="Berikutnya"><i data-lucide="chevron-right" style="width:32px;height:32px"></i></button>
       <template x-if="active">
         <div class="max-w-3xl w-full">
           <img :src="active.image" :alt="active.title" class="w-full rounded-lg" style="max-height:70vh;object-fit:contain;background:#000;">

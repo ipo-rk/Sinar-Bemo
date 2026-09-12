@@ -2,7 +2,7 @@
 <html lang="id" x-data="themeApp()" x-init="init()">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Berita Terbaru - SINAR BEMO.COM</title>
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
@@ -32,7 +32,7 @@
 <div id="site-header-mount"></div>
 <div id="site-navbar-mount"></div>
 <div id="breaking-news-mount"></div>
-<script>Components.mountPublicLayout('');</script>
+<script>Components.mountPublicLayout('terbaru');</script>
 
 <main x-data="listingApp('latest')" x-init="init()">
   <div class="container-app py-6">
@@ -51,7 +51,7 @@
             <div x-html="Components.newsCardHTML(a)"></div>
           </template>
         </div>
-        <div class="flex justify-center gap-2 mt-8" x-show="totalPages > 1">
+        <div class="flex flex-wrap justify-center gap-2 mt-8" x-show="totalPages > 1">
           <button @click="currentPage = Math.max(1, currentPage - 1)" class="page-btn"><i data-lucide="chevron-left" style="width:14px;height:14px"></i></button>
           <template x-for="p in totalPages" :key="p">
             <button @click="currentPage = p" class="page-btn" :class="currentPage === p ? 'active' : ''" x-text="p"></button>

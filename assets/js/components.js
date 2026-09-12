@@ -120,7 +120,7 @@ function newsCardHorizontalHTML(a) {
     <a href="${articleUrl(a)}" class="thumb-wrap">
       <img src="${a.image}" alt="${a.title}" loading="lazy" onerror="this.src='${window.SINARBEMO_DATA.fallbackImage}'">
     </a>
-    <div class="flex flex-col justify-center gap-1">
+    <div class="min-w-0 flex flex-col justify-center gap-1">
       <span class="text-meta" style="color:var(--secondary);font-weight:600;">${a.category}</span>
       <a href="${articleUrl(a)}"><h4 class="card-title line-clamp-2">${a.title}</h4></a>
       <span class="text-meta">${timeAgo(a.published_at)} &middot; ${formatViews(a.views)}x dibaca</span>
@@ -210,7 +210,14 @@ function avatarHTML(src, size = 32) {
 }
 
 /* ---------- HEADER PARTIAL (terpusat, dipakai semua halaman) ---------- */
-function headerHTML() {
+function headerHTML(activeSlug = 'beranda') {
+  const categorySlugs = CATEGORIES_REF.map(c => c.slug);
+  const isCategoryActive = categorySlugs.includes(activeSlug);
+  const mobileLink = (slug, href, label, opts = {}) => {
+    const { icon = 'chevron-right', style = '' } = opts;
+    return `<a href="${href}" class="mobile-nav-link ${activeSlug === slug ? 'active' : ''}" ${style ? `style="${style}"` : ''}>${label} <i data-lucide="${icon}" style="width:16px;height:16px"></i></a>`;
+  };
+  const mobileCategoryItems = CATEGORIES_REF.map(c => `<a href="${Base}pages/kategori.html?slug=${c.slug}" class="mobile-nav-sublink ${activeSlug === c.slug ? 'active' : ''}"><i data-lucide="${c.icon}" style="width:14px;height:14px"></i> ${c.name}</a>`).join('');
   return `
   <header class="site-header" x-data="navApp()">
     <div class="header-top py-2 hidden md:block">
@@ -225,15 +232,15 @@ function headerHTML() {
       </div>
     </div>
     <div class="py-4">
-      <div class="container-app flex items-center justify-between gap-4">
-        <a href="${Base}index.html" class="brand-logo-wrap">
+      <div class="container-app flex items-center justify-between gap-2 sm:gap-4">
+        <a href="${Base}index.html" class="brand-logo-wrap min-w-0">
           <img src="${Base}assets/img/logo.png" alt="Logo Sinar Bemo" class="brand-logo-img">
-          <div class="flex flex-col leading-none">
+          <div class="flex flex-col leading-none min-w-0">
             <span class="brand-logo">SINAR <span>BEMO</span>.COM</span>
             <span class="brand-tagline">BERITA AKURAT &amp; TERKINI</span>
           </div>
         </a>
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
           <button @click="searchOpen = true" class="btn btn-ghost btn-icon" aria-label="Cari berita">
             <i data-lucide="search" style="width:18px;height:18px"></i>
           </button>
@@ -303,19 +310,22 @@ function headerHTML() {
           <button @click="mobileOpen=false" class="btn btn-ghost btn-icon"><i data-lucide="x"></i></button>
         </div>
         <nav>
-          <a href="${Base}index.html" class="mobile-nav-link">Beranda <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
-          <div x-data="{ categoriesOpen: false }" class="mobile-nav-group">
-            <button @click="categoriesOpen = !categoriesOpen" class="mobile-nav-link mobile-nav-toggle" :aria-expanded="categoriesOpen.toString()">
-              <span>Kategori</span><i data-lucide="chevron-down" class="mobile-nav-chevron" :class="{ 'is-open': categoriesOpen }" style="width:16px;height:16px"></i>
+          ${mobileLink('beranda', `${Base}index.html`, 'Beranda')}
+          <div class="mobile-nav-group" x-data="{ catOpen: ${isCategoryActive ? 'true' : 'false'} }">
+            <button type="button" @click="catOpen = !catOpen" class="mobile-nav-link mobile-nav-toggle ${isCategoryActive ? 'active' : ''}" :class="{ 'is-open': catOpen }" aria-haspopup="true" :aria-expanded="catOpen.toString()">
+              <span>Kategori</span>
+              <i data-lucide="chevron-down" class="mobile-nav-caret" style="width:16px;height:16px"></i>
             </button>
-            <div x-show="categoriesOpen" x-transition x-cloak class="mobile-nav-submenu">
-              ${CATEGORIES_REF.map(c => `<a href="${Base}pages/kategori.html?slug=${c.slug}" class="mobile-nav-sublink">${c.name}<i data-lucide="chevron-right" style="width:15px;height:15px"></i></a>`).join('')}
+            <div x-show="catOpen" x-cloak x-transition class="mobile-nav-submenu">
+              ${mobileCategoryItems}
             </div>
           </div>
-          <a href="${Base}pages/foto.html" class="mobile-nav-link">Foto <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
-          <a href="${Base}pages/video.html" class="mobile-nav-link">Video <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
-          <a href="${Base}pages/opini.html" class="mobile-nav-link">Opini <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
-          <a href="${Base}pages/login.html" class="mobile-nav-link" style="color:var(--primary);">Login <i data-lucide="log-in" style="width:16px;height:16px"></i></a>
+          ${mobileLink('foto', `${Base}pages/foto.html`, 'Foto')}
+          ${mobileLink('video', `${Base}pages/video.html`, 'Video')}
+          ${mobileLink('opini', `${Base}pages/opini.html`, 'Opini')}
+          ${mobileLink('populer', `${Base}pages/populer.html`, 'Populer')}
+          ${mobileLink('terbaru', `${Base}pages/terbaru.html`, 'Terbaru')}
+          ${mobileLink('login', `${Base}pages/login.html`, 'Login', { icon: 'log-in', style: 'color:var(--primary);' })}
         </nav>
       </div>
     </div>
@@ -326,22 +336,41 @@ function headerHTML() {
 function navbarHTML(activeSlug = 'beranda') {
   const link = (slug, href, label) =>
     `<a href="${href}" class="nav-link ${activeSlug === slug ? 'active' : ''}">${label}</a>`;
-  const categoryActive = CATEGORIES_REF.some(c => c.slug === activeSlug);
+
+  const categorySlugs = CATEGORIES_REF.map(c => c.slug);
+  const isCategoryActive = categorySlugs.includes(activeSlug);
+
+  const categoryItems = CATEGORIES_REF.map(c => `
+      <a href="${categoryUrl(c.slug)}" class="nav-dropdown-item ${activeSlug === c.slug ? 'active' : ''}">
+        <span class="nav-dropdown-icon"><i data-lucide="${c.icon}" style="width:16px;height:16px;"></i></span>
+        <span>${c.name}</span>
+      </a>`).join('');
+
   return `
-  <nav class="navbar hidden md:block" aria-label="Navigasi utama">
+  <nav class="navbar hidden md:block">
     <div class="container-app navbar-scroll flex items-center">
       ${link('beranda', `${Base}index.html`, 'Beranda')}
-      <div class="nav-dropdown" x-data="{ open: false }">
-        <button @click="open = !open" @keydown.escape.window="open = false" class="nav-link nav-dropdown-trigger ${categoryActive ? 'active' : ''}" :aria-expanded="open.toString()" aria-haspopup="true">
-          Kategori <i data-lucide="chevron-down" class="nav-chevron" :class="{ 'is-open': open }" style="width:15px;height:15px"></i>
+      <div class="nav-dropdown" x-data="{ open: false }" @keydown.escape.window="open=false">
+        <button type="button" @click="open = !open" class="nav-link nav-dropdown-trigger ${isCategoryActive ? 'active' : ''}" :class="{ 'is-open': open }" aria-haspopup="true" :aria-expanded="open.toString()">
+          <span>Kategori</span>
+          <i data-lucide="chevron-down" class="nav-dropdown-caret" style="width:14px;height:14px;"></i>
         </button>
-        <div x-show="open" x-cloak @click.outside="open = false" class="nav-dropdown-menu">
-          ${CATEGORIES_REF.map(c => `<a href="${Base}pages/kategori.html?slug=${c.slug}" class="nav-dropdown-item ${activeSlug === c.slug ? 'active' : ''}">${c.name}</a>`).join('')}
+        <div x-show="open" x-cloak @click.outside="open=false" @click="open=false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+             x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+             class="nav-dropdown-menu">
+          ${categoryItems}
         </div>
       </div>
       ${link('foto', `${Base}pages/foto.html`, 'Foto')}
       ${link('video', `${Base}pages/video.html`, 'Video')}
       ${link('opini', `${Base}pages/opini.html`, 'Opini')}
+      ${link('populer', `${Base}pages/populer.html`, 'Populer')}
+      ${link('terbaru', `${Base}pages/terbaru.html`, 'Terbaru')}
     </div>
   </nav>`;
 }
@@ -350,13 +379,13 @@ function navbarHTML(activeSlug = 'beranda') {
 function breakingNewsHTML() {
   return `
   <div class="breaking-bar" x-data="breakingNewsApp()" x-init="init()" x-show="!closed" x-cloak @mouseenter="stop()" @mouseleave="start()">
-    <div class="container-app flex items-center gap-3 py-2">
-      <span class="breaking-label rounded">BREAKING NEWS</span>
+    <div class="container-app flex items-center gap-2 sm:gap-3 py-2">
+      <span class="breaking-label rounded"><span class="sm:hidden">BREAKING</span><span class="hidden sm:inline">BREAKING NEWS</span></span>
       <div class="flex-1 overflow-hidden">
         <template x-if="current"><a :href="url(current)" class="breaking-track" x-text="current.title"></a></template>
       </div>
-      <button @click="prev()" class="btn-icon" aria-label="Sebelumnya"><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>
-      <button @click="next()" class="btn-icon" aria-label="Berikutnya"><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>
+      <button @click="prev()" class="btn-icon hidden sm:inline-flex" aria-label="Sebelumnya"><i data-lucide="chevron-left" style="width:16px;height:16px"></i></button>
+      <button @click="next()" class="btn-icon hidden sm:inline-flex" aria-label="Berikutnya"><i data-lucide="chevron-right" style="width:16px;height:16px"></i></button>
       <button @click="close()" class="btn-icon" aria-label="Tutup"><i data-lucide="x" style="width:16px;height:16px"></i></button>
     </div>
   </div>`;
@@ -494,7 +523,7 @@ function mountPublicLayout(activeSlug = 'beranda', { breaking = true } = {}) {
   const navMount = document.getElementById('site-navbar-mount');
   const breakingMount = document.getElementById('breaking-news-mount');
   const footerMount = document.getElementById('site-footer-mount');
-  if (headerMount) headerMount.outerHTML = headerHTML();
+  if (headerMount) headerMount.outerHTML = headerHTML(activeSlug);
   if (navMount) navMount.outerHTML = navbarHTML(activeSlug);
   if (breakingMount) breakingMount.outerHTML = breaking ? breakingNewsHTML() : '';
   if (footerMount) footerMount.outerHTML = footerHTML();

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Detail Berita - SINAR BEMO.COM</title>
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
@@ -36,7 +36,11 @@
   <div id="site-header-mount"></div>
   <div id="site-navbar-mount"></div>
   <div id="breaking-news-mount"></div>
-  <script>Components.mountPublicLayout('nasional');</script>
+  <script>
+    const _slug = new URLSearchParams(location.search).get('slug');
+    const _art = (window.SINARBEMO_DATA.articles.find(a => a.slug === _slug)) || window.SINARBEMO_DATA.articles[0];
+    Components.mountPublicLayout(_art ? _art.category_slug : 'nasional');
+  </script>
 
   <main x-data="articleApp()" x-init="init()">
     <div class="container-app py-6">
