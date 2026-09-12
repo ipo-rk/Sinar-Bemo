@@ -1,5 +1,5 @@
 /* =========================================================
-   SINAR BEMO.COM — COMPONENTS
+   SINAR BEMO — COMPONENTS
    Fungsi murni: menerima data → mengembalikan string HTML.
    Tidak menyimpan state (state dikelola di app.js/admin.js).
    Path asset di sini relatif terhadap ROOT (gunakan window.ASSET_BASE
@@ -209,6 +209,44 @@ function avatarHTML(src, size = 32) {
   return `<img src="${src}" alt="avatar" class="rounded-full object-cover" style="width:${size}px;height:${size}px;">`;
 }
 
+function getSiteSettings() {
+  try {
+    const raw = localStorage.getItem('sb_settings');
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function normalizeSettingsAssetUrl(url) {
+  if (!url) return `${Base}assets/img/logo.png`;
+  if (/^https?:\/\//i.test(url) || /^data:/i.test(url) || url.startsWith('/') || url.startsWith('blob:')) {
+    return url;
+  }
+
+  let cleaned = url.replace(/^\.\//, '').replace(/^\.\.\//, '');
+  if (!cleaned.startsWith('assets/') && !cleaned.startsWith('img/') && !cleaned.startsWith('css/') && !cleaned.startsWith('js/')) {
+    cleaned = `assets/${cleaned.replace(/^assets\//, '')}`;
+  }
+
+  return Base ? `${Base}${cleaned}` : cleaned;
+}
+
+function siteBrandLogo() {
+  const settings = getSiteSettings();
+  return normalizeSettingsAssetUrl(settings.logo);
+}
+
+function siteBrandName() {
+  const settings = getSiteSettings();
+  return settings.site_name || 'SINAR BEMO';
+}
+
+function siteBrandTagline() {
+  const settings = getSiteSettings();
+  return settings.tagline || 'BERITA AKURAT & TERKINI';
+}
+
 /* ---------- HEADER PARTIAL (terpusat, dipakai semua halaman) ---------- */
 function headerHTML(activeSlug = 'beranda') {
   const categorySlugs = CATEGORIES_REF.map(c => c.slug);
@@ -234,10 +272,10 @@ function headerHTML(activeSlug = 'beranda') {
     <div class="py-4">
       <div class="container-app flex items-center justify-between gap-2 sm:gap-4">
         <a href="${Base}index.html" class="brand-logo-wrap min-w-0">
-          <img src="${Base}assets/img/logo.png" alt="Logo Sinar Bemo" class="brand-logo-img">
+          <img src="${siteBrandLogo()}" alt="Logo SINAR BEMO" class="brand-logo-img">
           <div class="flex flex-col leading-none min-w-0">
-            <span class="brand-logo">SINAR <span>BEMO</span>.COM</span>
-            <span class="brand-tagline">BERITA AKURAT &amp; TERKINI</span>
+            <span class="brand-logo">${siteBrandName()}</span>
+            <span class="brand-tagline">${siteBrandTagline()}</span>
           </div>
         </a>
         <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
@@ -304,8 +342,8 @@ function headerHTML(activeSlug = 'beranda') {
       <div class="mobile-drawer-panel relative p-5 overflow-y-auto" x-show="mobileOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0">
         <div class="flex items-center justify-between mb-6">
           <a href="${Base}index.html" class="flex items-center gap-2">
-            <img src="${Base}assets/img/logo.png" alt="Logo Sinar Bemo" style="width:32px;height:32px;object-fit:contain;">
-            <span class="brand-logo" style="font-size:20px;">SINAR <span>BEMO</span></span>
+            <img src="${siteBrandLogo()}" alt="Logo SINAR BEMO" style="width:32px;height:32px;object-fit:contain;">
+            <span class="brand-logo" style="font-size:20px;">${siteBrandName()}</span>
           </a>
           <button @click="mobileOpen=false" class="btn btn-ghost btn-icon"><i data-lucide="x"></i></button>
         </div>
@@ -398,10 +436,10 @@ function footerHTML() {
     <div class="container-app grid grid-cols-1 md:grid-cols-4 gap-10">
       <div>
         <a href="${Base}index.html" class="flex items-center gap-3 mb-3" style="text-decoration:none;">
-          <img src="${Base}assets/img/logo.png" alt="Logo Sinar Bemo" style="width:40px;height:40px;object-fit:contain;border-radius:50%;background:#fff;padding:3px;">
+          <img src="${siteBrandLogo()}" alt="Logo SINAR BEMO" style="width:40px;height:40px;object-fit:contain;border-radius:50%;background:#fff;padding:3px;">
           <div class="flex flex-col leading-none">
-            <span class="brand-logo" style="color:#fff;font-size:20px;">SINAR <span style="color:var(--primary);">BEMO</span>.COM</span>
-            <span style="font-size:10px;color:#93c5fd;font-weight:600;letter-spacing:1.5px;">BERITA AKURAT &amp; TERKINI</span>
+            <span class="brand-logo" style="color:#fff;font-size:20px;">${siteBrandName()}</span>
+            <span style="font-size:10px;color:#93c5fd;font-weight:600;letter-spacing:1.5px;">${siteBrandTagline()}</span>
           </div>
         </a>
         <p class="text-sm mt-3 opacity-70">Portal berita independen yang menyajikan informasi nasional, daerah, dan Papua secara cepat dan berimbang.</p>
@@ -439,7 +477,7 @@ function footerHTML() {
       </div>
     </div>
     <div class="container-app border-t mt-10 pt-5 text-xs opacity-60 text-center" style="border-color:rgba(255,255,255,.1);">
-      © 2026 SINAR BEMO.COM. All Rights Reserved.
+      © 2026 SINAR BEMO. All Rights Reserved.
     </div>
   </footer>
   ${fabHTML()}`;

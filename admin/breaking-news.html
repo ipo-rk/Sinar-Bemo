@@ -1,67 +1,81 @@
 <!DOCTYPE html>
 <html lang="id" x-data="themeApp()" x-init="init()">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Breaking News - Admin SINAR BEMO.COM</title>
-<!-- Favicon -->
-<link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="../assets/img/apple-touch-icon.png">
-<link rel="shortcut icon" href="../favicon.ico">
-<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breaking News - Admin SINAR BEMO</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/img/apple-touch-icon.png">
+  <link rel="shortcut icon" href="../favicon.ico">
+  <meta name="robots" content="noindex, nofollow">
 
-<script>(function(){const w=console.warn;console.warn=function(...a){if(typeof a[0]==="string"&&a[0].includes("cdn.tailwindcss.com"))return;w.apply(console,a);};})();</script>
-<script>/* theme-init */!function(){var t=localStorage.getItem('theme')||'system',d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}()</script>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest"></script>
-<link rel="stylesheet" href="../assets/css/style.css">
-<link rel="stylesheet" href="../assets/css/admin.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>(function () { const w = console.warn; console.warn = function (...a) { if (typeof a[0] === "string" && a[0].includes("cdn.tailwindcss.com")) return; w.apply(console, a); }; })();</script>
+  <script>/* theme-init */!function () { var t = localStorage.getItem('theme') || 'system', d = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme:dark)').matches); document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light') }()</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>window.ASSET_BASE = '../';</script>
-<script src="../assets/js/data.js"></script>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/app.js"></script>
-<script src="../assets/js/admin.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>window.ASSET_BASE = '../';</script>
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script src="../assets/js/admin.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
+
 <body>
 
-<div class="admin-shell" x-data="adminShell('breaking-news')">
-  <div id="admin-sidebar-mount"></div>
-  <div class="admin-content">
-    <div id="admin-topbar-mount"></div>
+  <div class="admin-shell" x-data="adminShell('breaking-news')">
+    <div id="admin-sidebar-mount"></div>
+    <div class="admin-content">
+      <div id="admin-topbar-mount"></div>
 
-    <div class="admin-main" x-data="{ items: window.SINARBEMO_DATA.articles.filter(a=>a.breaking), toggle(a){ a.breaking = !a.breaking; AlertKit.success(a.breaking ? 'Ditambahkan ke Breaking News' : 'Dihapus dari Breaking News'); } }">
-      <p class="text-sm mb-4" style="color:var(--gray-500);">Tandai berita sebagai <strong>Breaking News</strong> agar tampil pada marquee di halaman publik.</p>
-      <div class="admin-table-wrap">
-        <table class="admin-table">
-          <thead><tr><th>Thumbnail</th><th>Judul</th><th>Kategori</th><th>Status Breaking</th><th>Aksi</th></tr></thead>
-          <tbody>
-            <template x-for="a in window.SINARBEMO_DATA.articles.filter(x=>x.status==='published')" :key="a.id">
+      <div class="admin-main" x-data="breakingNewsAdminApp()">
+        <p class="text-sm mb-4" style="color:var(--gray-500);">Tandai berita sebagai <strong>Breaking News</strong> agar
+          tampil pada marquee di halaman publik.</p>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
               <tr>
-                <td><img :src="a.image" class="rounded-md object-cover" style="width:56px;height:40px;" alt=""></td>
-                <td class="font-medium" style="max-width:320px;" x-text="a.title"></td>
-                <td x-text="a.category"></td>
-                <td><span class="badge" :class="a.breaking ? 'badge-breaking' : 'badge-status-draft'" x-text="a.breaking ? 'Aktif' : 'Nonaktif'"></span></td>
-                <td><button @click="toggle(a)" class="btn btn-sm" :class="a.breaking ? 'btn-outline' : 'btn-primary'" x-text="a.breaking ? 'Nonaktifkan' : 'Jadikan Breaking'"></button></td>
+                <th>Thumbnail</th>
+                <th>Judul</th>
+                <th>Kategori</th>
+                <th>Status Breaking</th>
+                <th>Aksi</th>
               </tr>
-            </template>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              <template x-for="a in window.SINARBEMO_DATA.articles.filter(x=>x.status==='published')" :key="a.id">
+                <tr>
+                  <td><img :src="a.image" class="rounded-md object-cover" style="width:56px;height:40px;" alt=""></td>
+                  <td class="font-medium" style="max-width:320px;" x-text="a.title"></td>
+                  <td x-text="a.category"></td>
+                  <td><span class="badge" :class="a.breaking ? 'badge-breaking' : 'badge-status-draft'"
+                      x-text="a.breaking ? 'Aktif' : 'Nonaktif'"></span></td>
+                  <td><button @click="toggle(a)" class="btn btn-sm" :class="a.breaking ? 'btn-outline' : 'btn-primary'"
+                      x-text="a.breaking ? 'Nonaktifkan' : 'Jadikan Breaking'"></button></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    mountAdminShell('breaking-news', 'Breaking News');
-    setTimeout(() => window.lucide && lucide.createIcons(), 200);
-  });
-</script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      mountAdminShell('breaking-news', 'Breaking News');
+      setTimeout(() => window.lucide && lucide.createIcons(), 200);
+    });
+  </script>
 </body>
+
 </html>

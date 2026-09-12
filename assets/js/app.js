@@ -1,5 +1,5 @@
 /* =========================================================
-   SINAR BEMO.COM — PUBLIC APP LOGIC (Alpine.js)
+   SINAR BEMO — PUBLIC APP LOGIC (Alpine.js)
    ========================================================= */
 
 const D = () => window.SINARBEMO_DATA;
@@ -183,7 +183,7 @@ function articleApp() {
         this.popular = [...D().articles].sort((a, b) => b.views - a.views).slice(0, 5);
         this.comments = D().comments.filter(c => c.article_id === this.article.id || c.article_id === 1);
         this.bookmarked = isBookmarked(this.article.id);
-        document.title = this.article.title + ' - SINAR BEMO.COM';
+        document.title = this.article.title + ' - SINAR BEMO';
         this.loading = false;
         this.$nextTick(() => window.lucide && lucide.createIcons());
       }, 400);
@@ -344,6 +344,17 @@ function opiniApp() {
   };
 }
 
+/* ---------- ABOUT PAGE ---------- */
+function aboutApp() {
+  return {
+    authors: [],
+    init() {
+      this.authors = (D().authors || []).slice(0, 6);
+      this.$nextTick(() => window.lucide && lucide.createIcons());
+    },
+  };
+}
+
 /* ---------- NEWSLETTER ---------- */
 function newsletterApp() {
   return {
@@ -380,7 +391,23 @@ function loginApp() {
         AlertKit.error('Login gagal', 'Email atau kata sandi demo tidak sesuai.');
         return;
       }
-      localStorage.setItem('sb_demo_user', JSON.stringify(acc));
+
+      let resolvedAvatar = acc.avatar;
+      try {
+        const persistedUsers = JSON.parse(localStorage.getItem('sb_users') || '[]');
+        const persistedUser = persistedUsers.find(u => u.email && u.email.toLowerCase() === acc.email.toLowerCase());
+        if (persistedUser && persistedUser.avatar) {
+          resolvedAvatar = persistedUser.avatar;
+        } else {
+          const settings = JSON.parse(localStorage.getItem('sb_settings') || '{}');
+          if (settings.profile_image) {
+            resolvedAvatar = settings.profile_image;
+          }
+        }
+      } catch (e) { }
+
+      const loggedUser = { ...acc, avatar: resolvedAvatar };
+      localStorage.setItem('sb_demo_user', JSON.stringify(loggedUser));
       AlertKit.success('Login berhasil', `Selamat datang, ${acc.role}`).then(() => {
         location.href = acc.role === 'Pembaca' ? '../index.html' : '../admin/index.html';
       });

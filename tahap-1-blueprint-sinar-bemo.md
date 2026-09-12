@@ -1,14 +1,14 @@
-# TAHAP 1 — PERANCANGAN FRONTEND SINAR BEMO.COM
+# TAHAP 1 — PERANCANGAN FRONTEND SINAR BEMO
 ## "BERITA AKURAT & TERKINI"
 
-> Dokumen ini adalah **blueprint fondasi** untuk seluruh pembangunan frontend Sinar Bemo.com. Semua tahap berikutnya (Tahap 2–20) akan mengacu pada keputusan desain, struktur, dan konvensi penamaan yang ditetapkan di sini. Belum ada kode aplikasi pada tahap ini — hanya kerangka konseptual dan struktural.
+> Dokumen ini adalah **blueprint fondasi** untuk seluruh pembangunan frontend SINAR BEMO. Semua tahap berikutnya (Tahap 2–20) akan mengacu pada keputusan desain, struktur, dan konvensi penamaan yang ditetapkan di sini. Belum ada kode aplikasi pada tahap ini — hanya kerangka konseptual dan struktural.
 
 ---
 
 ## 1. KONSEP UI/UX
 
 ### Positioning
-Sinar Bemo.com diposisikan sebagai portal berita **editorial-premium**, terinspirasi dari portal kelas menengah-atas (gaya Kompas.com / Detik.com / BBC Indonesia) namun dengan sentuhan warna yang lebih hangat dan berani (coral) untuk membedakan identitas.
+SINAR BEMO diposisikan sebagai portal berita **editorial-premium**, terinspirasi dari portal kelas menengah-atas (gaya Kompas.com / Detik.com / BBC Indonesia) namun dengan sentuhan warna yang lebih hangat dan berani (coral) untuk membedakan identitas.
 
 ### Prinsip UX Utama
 | Prinsip | Penerapan |

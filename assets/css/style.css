@@ -1,5 +1,5 @@
 /* =========================================================
-   SINAR BEMO.COM — GLOBAL STYLESHEET  v3.0
+   SINAR BEMO — GLOBAL STYLESHEET  v3.0
    Design tokens + base + components (public site)
    Dark/Light mode: sepenuhnya dikendalikan oleh [data-theme]
    attribute di <html>. Semua warna wajib gunakan CSS var.
@@ -1883,18 +1883,21 @@ select.form-control {
    ========================================================= */
 .line-clamp-1 {
   display: -webkit-box;
+  line-clamp: 1;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 .line-clamp-2 {
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 .line-clamp-3 {
   display: -webkit-box;
+  line-clamp: 3;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;

@@ -1,5 +1,5 @@
 /* =========================================================
-   SINAR BEMO.COM — DUMMY DATA SOURCE
+   SINAR BEMO — DUMMY DATA SOURCE
    Struktur field dirancang agar 1:1 mudah dipetakan ke
    tabel Eloquent (Laravel) pada tahap integrasi berikutnya.
    ========================================================= */
@@ -24,7 +24,7 @@ const AUTHORS = [
   { id: 2, name: 'Yosep Rumbrar', avatar: 'https://i.pravatar.cc/150?img=12', role: 'Wartawan Papua', bio: 'Fokus liputan sosial dan pembangunan di Papua.' },
   { id: 3, name: 'Dinda Pratama', avatar: 'https://i.pravatar.cc/150?img=32', role: 'Wartawan Ekonomi', bio: 'Menulis analisis ekonomi dan bisnis.' },
   { id: 4, name: 'Aditya Nugraha', avatar: 'https://i.pravatar.cc/150?img=51', role: 'Wartawan Teknologi', bio: 'Mengulas tren teknologi dan startup.' },
-  { id: 5, name: 'Sinar Bemo', avatar: 'https://i.pravatar.cc/150?img=68', role: 'Redaksi', bio: 'Tim redaksi Sinar Bemo.com.' },
+  { id: 5, name: 'SINAR BEMO', avatar: 'https://i.pravatar.cc/150?img=68', role: 'Redaksi', bio: 'Tim redaksi SINAR BEMO.' },
 ];
 
 const TAGS = [
@@ -137,7 +137,7 @@ const articles = ARTICLE_TITLES.map((title, i) => {
     excerpt: EXCERPTS[i % EXCERPTS.length],
     content: ARTICLE_CONTENT_PARAGRAPHS,
     image: seededImage(i),
-    caption: `Ilustrasi terkait ${category.name.toLowerCase()} — dokumentasi Sinar Bemo.com.`,
+    caption: `Ilustrasi terkait ${category.name.toLowerCase()} — dokumentasi SINAR BEMO.`,
     views,
     status: i < 24 ? 'published' : statusPool[i % statusPool.length],
     featured: i % 6 === 0,
@@ -152,7 +152,7 @@ const photos = Array.from({ length: 12 }).map((_, i) => ({
   title: `Momen ${CATEGORIES[i % CATEGORIES.length].name} Pekan Ini #${i + 1}`,
   album: CATEGORIES[i % CATEGORIES.length].name,
   image: seededImage(i + 4),
-  caption: 'Dokumentasi lapangan tim Sinar Bemo.com.',
+  caption: 'Dokumentasi lapangan tim SINAR BEMO.',
   author: AUTHORS[i % AUTHORS.length].name,
   date: daysAgoISO(i),
 }));

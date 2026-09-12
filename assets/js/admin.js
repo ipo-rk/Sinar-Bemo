@@ -1,5 +1,5 @@
 /* =========================================================
-   SINAR BEMO.COM — ADMIN APP LOGIC (Alpine.js)  v3.0
+   SINAR BEMO — ADMIN APP LOGIC (Alpine.js)  v3.0
    Sistem Dashboard Dinamis & Persisten (LocalStorage Sync)
    ========================================================= */
 
@@ -56,13 +56,72 @@ const ADMIN_MENU = [
 ];
 
 /* ---------- ADMIN SHELL (sidebar + topbar) ---------- */
+function syncLoggedInAvatar(avatar) {
+  if (!avatar) return;
+
+  try {
+    const currentUser = JSON.parse(localStorage.getItem('sb_demo_user') || 'null');
+    if (currentUser) {
+      currentUser.avatar = avatar;
+      localStorage.setItem('sb_demo_user', JSON.stringify(currentUser));
+    }
+
+    const demoAccounts = window.SINARBEMO_DATA && Array.isArray(window.SINARBEMO_DATA.demoAccounts)
+      ? window.SINARBEMO_DATA.demoAccounts
+      : [];
+
+    if (currentUser && currentUser.email) {
+      const match = demoAccounts.find(a => a.email && a.email.toLowerCase() === currentUser.email.toLowerCase());
+      if (match) match.avatar = avatar;
+
+      const users = Array.isArray(window.SINARBEMO_DATA?.users) ? window.SINARBEMO_DATA.users : [];
+      const persistedUser = users.find(u => u.email && u.email.toLowerCase() === currentUser.email.toLowerCase());
+      if (persistedUser) {
+        persistedUser.avatar = avatar;
+        try {
+          localStorage.setItem('sb_users', JSON.stringify(users));
+        } catch (e) { }
+      }
+    }
+  } catch (e) { }
+}
+
+function getStoredSettings() {
+  try {
+    const raw = localStorage.getItem('sb_settings');
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function getCurrentAdminUser() {
+  const settings = getStoredSettings();
+  const storedUser = (() => {
+    try {
+      return JSON.parse(localStorage.getItem('sb_demo_user') || 'null');
+    } catch (e) {
+      return null;
+    }
+  })();
+
+  const fallbackUser = AD().demoAccounts[0] || null;
+  if (!storedUser) return fallbackUser;
+
+  if (!storedUser.avatar && settings.profile_image) {
+    storedUser.avatar = settings.profile_image;
+  }
+
+  return storedUser;
+}
+
 function adminShell(activeKey) {
   return {
     activeKey,
     collapsed: localStorage.getItem('admin_sidebar_collapsed') === '1',
     mobileOpen: false,
     menu: ADMIN_MENU,
-    currentUser: JSON.parse(localStorage.getItem('sb_demo_user') || 'null') || AD().demoAccounts[0],
+    currentUser: getCurrentAdminUser(),
     toggleCollapse() {
       this.collapsed = !this.collapsed;
       localStorage.setItem('admin_sidebar_collapsed', this.collapsed ? '1' : '0');
@@ -77,6 +136,74 @@ function adminShell(activeKey) {
     },
     badgeValue(item) { return item.badge ? item.badge() : null; },
   };
+}
+
+async function compressDataUrlToLimit(dataUrl, options = {}) {
+  if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) {
+    return dataUrl;
+  }
+
+  const {
+    maxWidth = 256,
+    maxBytes = 90000,
+    initialQuality = 0.82,
+    minQuality = 0.35,
+  } = options;
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const maxSide = Math.max(img.width, img.height);
+      const scale = Math.min(1, maxWidth / maxSide);
+      const targetWidth = Math.max(1, Math.round(img.width * scale));
+      const targetHeight = Math.max(1, Math.round(img.height * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+      const mimeType = 'image/jpeg';
+      let quality = initialQuality;
+      let result = canvas.toDataURL(mimeType, quality);
+
+      while (result.length > maxBytes && quality > minQuality) {
+        quality = Number(Math.max(minQuality, quality - 0.06).toFixed(2));
+        result = canvas.toDataURL(mimeType, quality);
+      }
+
+      resolve(result);
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+async function readAndCompressLocalImage(file, options = {}) {
+  if (!file) return '';
+
+  const result = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  return compressDataUrlToLimit(result, options);
+}
+
+async function normalizePersistableImage(value, options = {}) {
+  if (!value || typeof value !== 'string') return value;
+
+  if (value.startsWith('data:image/')) {
+    return compressDataUrlToLimit(value, options);
+  }
+
+  return value;
 }
 
 /* ---------- DASHBOARD (Dinamis & Real-time) ---------- */
@@ -427,9 +554,32 @@ function simpleCrudApp(dataKey) {
       const slug = this.form.slug.trim() || this.form.name.toLowerCase().trim().replace(/\s+/g, '-');
 
       if (this.editing) {
+        const previousName = this.editing.name;
+        const previousSlug = this.editing.slug || '';
+
         this.editing.name = this.form.name.trim();
         this.editing.slug = slug;
         this.editing.description = this.form.description.trim();
+
+        if (this.dataKey === 'categories') {
+          AD().articles.forEach(article => {
+            if (article.category === previousName || article.category_slug === previousSlug) {
+              article.category = this.editing.name;
+              article.category_slug = slug;
+            }
+          });
+          AD().save('articles');
+        }
+
+        if (this.dataKey === 'tags') {
+          AD().articles.forEach(article => {
+            if (Array.isArray(article.tags)) {
+              article.tags = article.tags.map(tag => tag === previousName ? this.editing.name : tag);
+            }
+          });
+          AD().save('articles');
+        }
+
         AD().save(this.dataKey);
         AD().addLog(`Mengedit ${this.dataKey}`, this.dataKey, `Memperbarui "${this.editing.name}"`);
         AlertKit.success('Perubahan disimpan');
@@ -452,6 +602,29 @@ function simpleCrudApp(dataKey) {
     remove(item) {
       AlertKit.confirmDelete(`Item "${item.name}" akan dihapus permanen.`).then(res => {
         if (res.isConfirmed) {
+          const fallbackCategory = (this.dataKey === 'categories' && AD().categories.length > 1)
+            ? AD().categories.find(c => c.id !== item.id)
+            : null;
+
+          if (this.dataKey === 'categories') {
+            AD().articles.forEach(article => {
+              if (article.category === item.name || article.category_slug === item.slug) {
+                article.category = fallbackCategory ? fallbackCategory.name : 'Nasional';
+                article.category_slug = fallbackCategory ? fallbackCategory.slug : 'nasional';
+              }
+            });
+            AD().save('articles');
+          }
+
+          if (this.dataKey === 'tags') {
+            AD().articles.forEach(article => {
+              if (Array.isArray(article.tags)) {
+                article.tags = article.tags.filter(tag => tag !== item.name);
+              }
+            });
+            AD().save('articles');
+          }
+
           AD()[this.dataKey] = AD()[this.dataKey].filter(i => i.id !== item.id);
           AD().save(this.dataKey);
           AD().addLog(`Menghapus ${this.dataKey}`, this.dataKey, `Menghapus "${item.name}"`);
@@ -505,13 +678,23 @@ function authorsApp() {
         return;
       }
       if (this.editing) {
+        const previousName = this.editing.name;
+
         Object.assign(this.editing, {
           name: this.form.name.trim(),
           role: this.form.role.trim(),
           bio: this.form.bio.trim(),
           avatar: this.form.avatar.trim() || this.editing.avatar
         });
+
+        AD().articles.forEach(article => {
+          if (article.author === previousName) {
+            article.author = this.editing.name;
+          }
+        });
+
         AD().save('authors');
+        AD().save('articles');
         AD().addLog('Mengedit penulis', 'Penulis', `Memperbarui data "${this.editing.name}"`);
         AlertKit.success('Data penulis diperbarui');
       } else {
@@ -533,8 +716,18 @@ function authorsApp() {
     remove(a) {
       AlertKit.confirmDelete(`Penulis "${a.name}" akan dihapus.`).then(res => {
         if (res.isConfirmed) {
+          const removedName = a.name;
+          const fallbackAuthor = AD().authors.find(x => x.id !== a.id)?.name || 'SINAR BEMO';
+
           AD().authors = AD().authors.filter(x => x.id !== a.id);
+          AD().articles.forEach(article => {
+            if (article.author === removedName) {
+              article.author = fallbackAuthor;
+            }
+          });
+
           AD().save('authors');
+          AD().save('articles');
           AD().addLog('Menghapus penulis', 'Penulis', `Menghapus "${a.name}"`);
           this.refreshData();
           AlertKit.success('Penulis berhasil dihapus');
@@ -711,21 +904,67 @@ function userManagementApp() {
       this.form = { ...u };
       this.showModal = true;
     },
-    save() {
+    async handleAvatarUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        AlertKit.warning('Format file tidak valid', 'Silakan pilih berkas gambar.');
+        event.target.value = '';
+        return;
+      }
+
+      try {
+        const compressed = await readAndCompressLocalImage(file, { maxWidth: 256, maxBytes: 90000 });
+        this.form.avatar = compressed;
+      } catch (e) {
+        AlertKit.error('Upload gagal', 'Gambar tidak dapat diproses. Silakan coba file lain.');
+      }
+
+      event.target.value = '';
+    },
+    async save() {
       if (!this.form.name.trim() || !this.form.email.trim()) {
         AlertKit.warning('Nama dan email pengguna wajib diisi');
         return;
       }
+
+      const imageOptions = { maxWidth: 256, maxBytes: 90000 };
+
       if (this.editing) {
-        Object.assign(this.editing, {
+        const nextAvatar = await normalizePersistableImage(this.form.avatar.trim() || this.editing.avatar, imageOptions);
+        const previousEmail = (this.editing.email || '').trim().toLowerCase();
+        const mergedUser = {
+          ...this.editing,
           name: this.form.name.trim(),
           email: this.form.email.trim(),
           role: this.form.role,
           status: this.form.status,
-          avatar: this.form.avatar.trim() || this.editing.avatar
-        });
+          avatar: nextAvatar,
+        };
+
+        Object.assign(this.editing, mergedUser);
+
+        const users = Array.isArray(AD().users) ? AD().users : [];
+        const userIndex = users.findIndex(u => u.email && u.email.toLowerCase() === previousEmail);
+        if (userIndex !== -1) {
+          users[userIndex] = { ...users[userIndex], ...mergedUser };
+        }
+
+        const currentUser = JSON.parse(localStorage.getItem('sb_demo_user') || 'null');
+        if (currentUser && previousEmail && currentUser.email && currentUser.email.toLowerCase() === previousEmail) {
+          const syncedCurrentUser = {
+            ...currentUser,
+            name: mergedUser.name,
+            email: mergedUser.email,
+            role: mergedUser.role,
+            status: mergedUser.status,
+            avatar: mergedUser.avatar,
+          };
+          localStorage.setItem('sb_demo_user', JSON.stringify(syncedCurrentUser));
+        }
+
         AD().save('users');
-        AD().addLog('Mengedit pengguna', 'Users', `Memperbarui akun "${this.editing.name}"`);
+        AD().addLog('Mengedit pengguna', 'Users', `Memperbarui akun "${mergedUser.name}"`);
         AlertKit.success('Data pengguna diperbarui');
       } else {
         const newUser = {
@@ -734,7 +973,7 @@ function userManagementApp() {
           email: this.form.email.trim(),
           role: this.form.role,
           status: this.form.status,
-          avatar: this.form.avatar.trim() || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 60) + 1}`,
+          avatar: await normalizePersistableImage(this.form.avatar.trim() || `https://i.pravatar.cc/150?img=${Math.floor(Math.random() * 60) + 1}`, imageOptions),
           joined: new Date().toISOString().slice(0, 10),
         };
         AD().users.push(newUser);
@@ -762,10 +1001,13 @@ function userManagementApp() {
 /* ---------- SETTINGS (Pengaturan Tersimpan) ---------- */
 function settingsApp() {
   const defaults = {
-    site_name: 'SINAR BEMO.COM',
+    site_name: 'SINAR BEMO',
     tagline: 'BERITA AKURAT & TERKINI',
     email: 'redaksi@sinarbemo.com',
     phone: '(0967) 123-456',
+    address: 'Jl. Bomou, Deiyai, Papua Tengah',
+    logo: '../assets/img/logo.png',
+    profile_image: 'https://i.pravatar.cc/150?img=68',
     articles_per_page: 8,
   };
   let saved = defaults;
@@ -784,8 +1026,49 @@ function settingsApp() {
       document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
       AlertKit.success(`Tema diubah ke ${t}`);
     },
-    save() {
-      localStorage.setItem('sb_settings', JSON.stringify(this.form));
+    async handleLocalImageUpload(event, field) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        AlertKit.warning('Format file tidak valid', 'Silakan pilih berkas gambar.');
+        event.target.value = '';
+        return;
+      }
+
+      try {
+        const compressed = await readAndCompressLocalImage(file, { maxWidth: 256, maxBytes: 90000 });
+        this.form[field] = compressed;
+      } catch (e) {
+        AlertKit.error('Upload gagal', 'Gambar tidak dapat diproses. Silakan coba file lain.');
+      }
+
+      event.target.value = '';
+    },
+    async save() {
+      try {
+        const imageOptions = { maxWidth: 256, maxBytes: 90000 };
+        const normalizedForm = {
+          ...this.form,
+          logo: await normalizePersistableImage(this.form.logo, imageOptions),
+          profile_image: await normalizePersistableImage(this.form.profile_image, imageOptions),
+        };
+
+        this.form = normalizedForm;
+        localStorage.setItem('sb_settings', JSON.stringify(this.form));
+      } catch (e) {
+        AlertKit.error('Penyimpanan gagal', 'Gambar terlalu besar untuk disimpan di browser ini. Silakan gunakan foto yang lebih kecil atau URL gambar yang sudah ringkas.');
+        return;
+      }
+
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('sb_demo_user') || 'null');
+        if (currentUser && this.form.profile_image) {
+          currentUser.avatar = this.form.profile_image;
+          localStorage.setItem('sb_demo_user', JSON.stringify(currentUser));
+          syncLoggedInAvatar(this.form.profile_image);
+        }
+      } catch (e) { }
+
       AD().addLog('Memperbarui pengaturan', 'Settings', 'Memperbarui konfigurasi identitas dan preferensi situs');
       AlertKit.success('Pengaturan disimpan', 'Konfigurasi telah tersimpan dengan aman.');
     },
@@ -861,12 +1144,23 @@ function activityLogsApp() {
 
 /* ---------- SIDEBAR + TOPBAR PARTIAL (terpusat) ---------- */
 function adminSidebarHTML() {
+  let logo = '../assets/img/logo.png';
+  let siteName = 'SINAR BEMO';
+  try {
+    const raw = localStorage.getItem('sb_settings');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.logo) logo = parsed.logo;
+      if (parsed.site_name) siteName = parsed.site_name;
+    }
+  } catch (e) { }
+
   return `
   <aside class="admin-sidebar" :class="{ collapsed: collapsed, 'mobile-open': mobileOpen }">
     <div class="sidebar-brand flex items-center gap-3">
-      <img src="../assets/img/logo.png" alt="Logo Sinar Bemo" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;border-radius:6px;background:rgba(255,255,255,0.05);padding:2px;">
+      <img src="${logo}" alt="Logo SINAR BEMO" style="width:34px;height:34px;object-fit:contain;flex-shrink:0;border-radius:6px;background:rgba(255,255,255,0.05);padding:2px;">
       <div class="sidebar-label">
-        <div style="color:#fff;font-weight:700;font-size:14px;line-height:1.2;">SINAR BEMO</div>
+        <div style="color:#fff;font-weight:700;font-size:14px;line-height:1.2;">${siteName}</div>
         <div style="font-size:10px;color:#94a3b8;">Admin Panel</div>
       </div>
     </div>
@@ -930,13 +1224,13 @@ function adminTopbarHTML(pageTitle) {
 
       <!-- User Dropdown -->
       <div class="relative" x-data="{ open:false }">
-        <button @click="open=!open" class="flex items-center gap-2">
-          <img :src="currentUser.avatar" class="w-8 h-8 rounded-full object-cover" alt="avatar">
+        <button @click="open=!open" class="flex items-center gap-2" type="button" aria-label="Menu pengguna">
+          <img :src="currentUser.avatar || 'https://i.pravatar.cc/150?img=68'" class="w-8 h-8 rounded-full object-cover" alt="avatar">
         </button>
         <div x-show="open" @click.outside="open=false" x-cloak x-transition
              style="position:absolute;right:0;margin-top:8px;width:176px;z-index:50;border-radius:var(--radius-md);background:var(--light);border:1px solid var(--border-color);box-shadow:var(--shadow-lg);padding:4px;">
-          <div style="padding:8px 12px;font-size:12px;color:var(--gray-500);" x-text="currentUser.name"></div>
-          <div style="padding:0 12px 8px;font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.5px;" x-text="currentUser.role"></div>
+          <div style="padding:8px 12px;font-size:12px;color:var(--gray-500);" x-text="currentUser.name || 'Pengguna'">Pengguna</div>
+          <div style="padding:0 12px 8px;font-size:11px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.5px;" x-text="currentUser.role || 'Admin'">Admin</div>
           <div style="border-top:1px solid var(--border-color);margin:4px 0;"></div>
           <button @click="logout()"
             style="width:100%;text-align:left;padding:8px 12px;border-radius:var(--radius-sm);font-size:13px;color:var(--primary);display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer;background:transparent;border:none;">

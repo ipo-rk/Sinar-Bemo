@@ -1,4 +1,4 @@
-# SINAR BEMO.COM — Frontend Prototype
+# SINAR BEMO — Frontend Prototype
 
 Portal berita **"BERITA AKURAT & TERKINI"** — frontend statis (HTML5 + Tailwind CSS + Bootstrap 5 +
 Alpine.js + SweetAlert2), menggunakan data dummy (`assets/js/data.js`). Belum terhubung ke backend

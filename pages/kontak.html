@@ -1,77 +1,117 @@
 <!DOCTYPE html>
 <html lang="id" x-data="themeApp()" x-init="init()">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Kontak - SINAR BEMO.COM</title>
-<!-- Favicon -->
-<link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="../assets/img/apple-touch-icon.png">
-<link rel="shortcut icon" href="../favicon.ico">
-<meta name="description" content="Hubungi redaksi SINAR BEMO.COM untuk pertanyaan, kerja sama, atau laporan berita.">
-<link rel="canonical" href="https://sinarbemo.com/kontak">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Kontak - SINAR BEMO</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="../assets/img/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/img/apple-touch-icon.png">
+  <link rel="shortcut icon" href="../favicon.ico">
+  <meta name="description" content="Hubungi redaksi SINAR BEMO untuk pertanyaan, kerja sama, atau laporan berita.">
+  <link rel="canonical" href="https://sinarbemo.com/kontak">
 
-<script>(function(){const w=console.warn;console.warn=function(...a){if(typeof a[0]==="string"&&a[0].includes("cdn.tailwindcss.com"))return;w.apply(console,a);};})();</script>
-<script>/* theme-init */!function(){var t=localStorage.getItem('theme')||'system',d=t==='dark'||(t==='system'&&window.matchMedia('(prefers-color-scheme:dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}()</script>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest"></script>
-<link rel="stylesheet" href="../assets/css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>(function () { const w = console.warn; console.warn = function (...a) { if (typeof a[0] === "string" && a[0].includes("cdn.tailwindcss.com")) return; w.apply(console, a); }; })();</script>
+  <script>/* theme-init */!function () { var t = localStorage.getItem('theme') || 'system', d = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme:dark)').matches); document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light') }()</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>window.ASSET_BASE = '../';</script>
-<script src="../assets/js/data.js"></script>
-<script src="../assets/js/components.js"></script>
-<script src="../assets/js/app.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script>window.ASSET_BASE = '../';</script>
+  <script src="../assets/js/data.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/app.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
+
 <body>
 
-<div id="site-header-mount"></div>
-<div id="site-navbar-mount"></div>
-<div id="breaking-news-mount"></div>
-<script>Components.mountPublicLayout('');</script>
+  <div id="site-header-mount"></div>
+  <div id="site-navbar-mount"></div>
+  <div id="breaking-news-mount"></div>
+  <script>Components.mountPublicLayout('');</script>
 
-<main x-data="{ form: { name: '', email: '', subject: '', message: '' }, send() {
+  <main x-data="{ form: { name: '', email: '', subject: '', message: '' }, send() {
   if (!this.form.name || !this.form.email || !this.form.message) { AlertKit.warning('Lengkapi form', 'Nama, email, dan pesan wajib diisi.'); return; }
   AlertKit.success('Pesan terkirim', 'Tim redaksi akan segera merespons pesan Anda.');
   this.form = { name: '', email: '', subject: '', message: '' };
 } }">
-  <div class="container-app py-10">
-    <h1 class="text-h1 mb-6">Hubungi Kami</h1>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div class="flex flex-col gap-4">
-        <div class="card p-4 flex items-start gap-3">
-          <i data-lucide="map-pin" style="width:20px;height:20px;color:var(--primary);"></i>
-          <div><div class="font-semibold text-sm">Alamat Redaksi</div><div class="text-sm" style="color:var(--gray-500);">Jl. Percetakan Negara No. 10, Jayapura, Papua</div></div>
+    <div class="container-app py-10">
+      <h1 class="text-h1 mb-6">Hubungi Kami</h1>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="flex flex-col gap-4">
+          <div class="card p-4 flex items-start gap-3">
+            <i data-lucide="map-pin" style="width:20px;height:20px;color:var(--primary);"></i>
+            <div>
+              <div class="font-semibold text-sm">Alamat Redaksi</div>
+              <div id="contact-address" class="text-sm" style="color:var(--gray-500);">Jl. Bomou, Deiyai, Papua Tengah
+              </div>
+            </div>
+          </div>
+          <div class="card p-4 flex items-start gap-3">
+            <i data-lucide="mail" style="width:20px;height:20px;color:var(--primary);"></i>
+            <div>
+              <div class="font-semibold text-sm">Email</div>
+              <div id="contact-email" class="text-sm" style="color:var(--gray-500);">redaksi@sinarbemo.com</div>
+            </div>
+          </div>
+          <div class="card p-4 flex items-start gap-3">
+            <i data-lucide="phone" style="width:20px;height:20px;color:var(--primary);"></i>
+            <div>
+              <div class="font-semibold text-sm">Telepon</div>
+              <div id="contact-phone" class="text-sm" style="color:var(--gray-500);">(0967) 123-456</div>
+            </div>
+          </div>
         </div>
-        <div class="card p-4 flex items-start gap-3">
-          <i data-lucide="mail" style="width:20px;height:20px;color:var(--primary);"></i>
-          <div><div class="font-semibold text-sm">Email</div><div class="text-sm" style="color:var(--gray-500);">redaksi@sinarbemo.com</div></div>
-        </div>
-        <div class="card p-4 flex items-start gap-3">
-          <i data-lucide="phone" style="width:20px;height:20px;color:var(--primary);"></i>
-          <div><div class="font-semibold text-sm">Telepon</div><div class="text-sm" style="color:var(--gray-500);">(0967) 123-456</div></div>
-        </div>
+
+        <form @submit.prevent="send()" class="lg:col-span-2 card p-6 flex flex-col gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div><label class="form-label">Nama</label><input x-model="form.name" type="text" class="form-control"
+                placeholder="Nama lengkap" required></div>
+            <div><label class="form-label">Email</label><input x-model="form.email" type="email" class="form-control"
+                placeholder="email@contoh.com" required></div>
+          </div>
+          <div><label class="form-label">Subjek</label><input x-model="form.subject" type="text" class="form-control"
+              placeholder="Subjek pesan"></div>
+          <div><label class="form-label">Pesan</label><textarea x-model="form.message" rows="5" class="form-control"
+              placeholder="Tulis pesan Anda..." required></textarea></div>
+          <button type="submit" class="btn btn-primary self-start">Kirim Pesan</button>
+        </form>
       </div>
-
-      <form @submit.prevent="send()" class="lg:col-span-2 card p-6 flex flex-col gap-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label class="form-label">Nama</label><input x-model="form.name" type="text" class="form-control" placeholder="Nama lengkap" required></div>
-          <div><label class="form-label">Email</label><input x-model="form.email" type="email" class="form-control" placeholder="email@contoh.com" required></div>
-        </div>
-        <div><label class="form-label">Subjek</label><input x-model="form.subject" type="text" class="form-control" placeholder="Subjek pesan"></div>
-        <div><label class="form-label">Pesan</label><textarea x-model="form.message" rows="5" class="form-control" placeholder="Tulis pesan Anda..." required></textarea></div>
-        <button type="submit" class="btn btn-primary self-start">Kirim Pesan</button>
-      </form>
     </div>
-  </div>
-</main>
+  </main>
 
-<div id="site-footer-mount"></div>
-<script>(function(){ var m=document.getElementById('site-footer-mount'); if(m) m.outerHTML = Components.footerHTML(); })();</script>
-<script>window.addEventListener('DOMContentLoaded', () => setTimeout(() => window.lucide && lucide.createIcons(), 150));</script>
+  <div id="site-footer-mount"></div>
+  <script>(function () { var m = document.getElementById('site-footer-mount'); if (m) m.outerHTML = Components.footerHTML(); })();</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const defaults = {
+        address: 'Jl. Bomou, Deiyai, Papua Tengah',
+        email: 'redaksi@sinarbemo.com',
+        phone: '(0967) 123-456'
+      };
+
+      try {
+        const settings = { ...defaults, ...(JSON.parse(localStorage.getItem('sb_settings') || '{}')) };
+        const address = document.getElementById('contact-address');
+        const email = document.getElementById('contact-email');
+        const phone = document.getElementById('contact-phone');
+
+        if (address) address.textContent = settings.address || defaults.address;
+        if (email) email.textContent = settings.email || defaults.email;
+        if (phone) phone.textContent = settings.phone || defaults.phone;
+      } catch (e) {
+        // fallback tetap dipakai jika localStorage tidak tersedia
+      }
+
+      setTimeout(() => window.lucide && lucide.createIcons(), 150);
+    });
+  </script>
 </body>
+
 </html>
