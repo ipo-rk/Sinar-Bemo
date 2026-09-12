@@ -304,7 +304,14 @@ function headerHTML() {
         </div>
         <nav>
           <a href="${Base}index.html" class="mobile-nav-link">Beranda <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
-          ${CATEGORIES_REF.map(c => `<a href="${Base}pages/kategori.html?slug=${c.slug}" class="mobile-nav-link">${c.name} <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>`).join('')}
+          <div x-data="{ categoriesOpen: false }" class="mobile-nav-group">
+            <button @click="categoriesOpen = !categoriesOpen" class="mobile-nav-link mobile-nav-toggle" :aria-expanded="categoriesOpen.toString()">
+              <span>Kategori</span><i data-lucide="chevron-down" class="mobile-nav-chevron" :class="{ 'is-open': categoriesOpen }" style="width:16px;height:16px"></i>
+            </button>
+            <div x-show="categoriesOpen" x-transition x-cloak class="mobile-nav-submenu">
+              ${CATEGORIES_REF.map(c => `<a href="${Base}pages/kategori.html?slug=${c.slug}" class="mobile-nav-sublink">${c.name}<i data-lucide="chevron-right" style="width:15px;height:15px"></i></a>`).join('')}
+            </div>
+          </div>
           <a href="${Base}pages/foto.html" class="mobile-nav-link">Foto <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
           <a href="${Base}pages/video.html" class="mobile-nav-link">Video <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
           <a href="${Base}pages/opini.html" class="mobile-nav-link">Opini <i data-lucide="chevron-right" style="width:16px;height:16px"></i></a>
@@ -319,13 +326,22 @@ function headerHTML() {
 function navbarHTML(activeSlug = 'beranda') {
   const link = (slug, href, label) =>
     `<a href="${href}" class="nav-link ${activeSlug === slug ? 'active' : ''}">${label}</a>`;
+  const categoryActive = CATEGORIES_REF.some(c => c.slug === activeSlug);
   return `
-  <nav class="navbar hidden md:block">
+  <nav class="navbar hidden md:block" aria-label="Navigasi utama">
     <div class="container-app navbar-scroll flex items-center">
       ${link('beranda', `${Base}index.html`, 'Beranda')}
-      ${CATEGORIES_REF.map(c => link(c.slug, `${Base}pages/kategori.html?slug=${c.slug}`, c.name)).join('')}
+      <div class="nav-dropdown" x-data="{ open: false }">
+        <button @click="open = !open" @keydown.escape.window="open = false" class="nav-link nav-dropdown-trigger ${categoryActive ? 'active' : ''}" :aria-expanded="open.toString()" aria-haspopup="true">
+          Kategori <i data-lucide="chevron-down" class="nav-chevron" :class="{ 'is-open': open }" style="width:15px;height:15px"></i>
+        </button>
+        <div x-show="open" x-cloak @click.outside="open = false" class="nav-dropdown-menu">
+          ${CATEGORIES_REF.map(c => `<a href="${Base}pages/kategori.html?slug=${c.slug}" class="nav-dropdown-item ${activeSlug === c.slug ? 'active' : ''}">${c.name}</a>`).join('')}
+        </div>
+      </div>
       ${link('foto', `${Base}pages/foto.html`, 'Foto')}
       ${link('video', `${Base}pages/video.html`, 'Video')}
+      ${link('opini', `${Base}pages/opini.html`, 'Opini')}
     </div>
   </nav>`;
 }
