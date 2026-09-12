@@ -37,6 +37,11 @@ function themeApp() {
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
         if (this.theme === 'system') this.applyTheme();
       });
+      window.addEventListener('storage', (event) => {
+        if (event.key !== 'theme' || !event.newValue) return;
+        this.theme = event.newValue;
+        this.applyTheme();
+      });
     },
     setTheme(t) {
       this.theme = t;
